@@ -3,9 +3,22 @@ import "./App.css";
 import ExpenseForm from "./components/ExpenseForm";
 import ExpenseTable from "./components/ExpenseTable";
 import SearchBar from "./components/SearchBar";
+import logo from './assets/logo.svg';
 
+/**
+ * Main App Component
+ * 
+ * This is the root component of the Expense Tracker application.
+ * It manages the global state and coordinates between child components.
+ * 
+ * Features:
+ * - Expense management (add, delete, undo delete)
+ * - Search and filter functionality
+ * - Sorting capabilities
+ * - Theme switching (dark/light mode)
+ */
 function App() {
-  // State to store all expenses
+  // Initial expense data with sample entries
   const [expenses, setExpenses] = useState([
     {
       id: 1,
@@ -33,34 +46,42 @@ function App() {
     },
   ]);
 
-  // State for deleted expenses (for undo functionality)
+  // Store deleted expenses for undo functionality
   const [deletedExpenses, setDeletedExpenses] = useState([]);
 
-  // State for search term
+  // Search term for filtering expenses
   const [searchTerm, setSearchTerm] = useState("");
 
-  // State for sort configuration
+  // Sorting configuration (key: column to sort by, direction: ascending/descending)
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
   });
 
-  // State for theme
+  // Theme state for dark/light mode
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Handler to add new expense
+  /**
+   * Adds a new expense to the list
+   * @param {Object} newExpense - The expense object to add
+   */
   const handleAddExpense = (newExpense) => {
     setExpenses([...expenses, { ...newExpense, id: Date.now() }]);
   };
 
-  // Handler to delete expense
+  /**
+   * Deletes an expense and stores it for potential undo
+   * @param {number} id - The ID of the expense to delete
+   */
   const handleDeleteExpense = (id) => {
     const deletedExpense = expenses.find((expense) => expense.id === id);
     setDeletedExpenses([...deletedExpenses, deletedExpense]);
     setExpenses(expenses.filter((expense) => expense.id !== id));
   };
 
-  // Handler to undo delete
+  /**
+   * Restores the most recently deleted expense
+   */
   const handleUndoDelete = () => {
     if (deletedExpenses.length > 0) {
       const lastDeleted = deletedExpenses[deletedExpenses.length - 1];
@@ -69,12 +90,18 @@ function App() {
     }
   };
 
-  // Handler for search
+  /**
+   * Updates search term for filtering expenses
+   * @param {string} term - The search term to filter by
+   */
   const handleSearch = (term) => {
     setSearchTerm(term);
   };
 
-  // Handler for sorting
+  /**
+   * Handles sorting when a column header is clicked
+   * @param {string} key - The column key to sort by
+   */
   const handleSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -83,19 +110,21 @@ function App() {
     setSortConfig({ key, direction });
   };
 
-  // Toggle theme
+  /**
+   * Toggles between dark and light theme
+   */
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
 
-  // Filter expenses based on search term
+  // Filter expenses based on search term (name or description match)
   const filteredExpenses = expenses.filter(
     (expense) =>
       expense.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       expense.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Sort expenses if sort config is set
+  // Sort expenses based on current sort configuration
   const sortedExpenses = [...filteredExpenses].sort((a, b) => {
     if (!sortConfig.key) return 0;
 
@@ -113,31 +142,27 @@ function App() {
 
   return (
     <div className={`App ${isDarkMode ? "dark-mode" : ""}`}>
+      <header className="header">
+        <img src={logo} className="app-logo" alt="Expense Tracker Logo" />
+        <h1>Expense Tracker</h1>
+      </header>
+      {/* Theme toggle button */}
       <div className="theme-toggle">
         <button onClick={toggleTheme} className="theme-btn">
           {isDarkMode ? "☀️ Light" : "🌙 Dark"}
         </button>
       </div>
-      <div className="app-header">
-        <div className="header-content">
-          <h1>
-            <span className="gradient-text">Expense</span>
-            <span className="gradient-text-2">Tracker</span>
-          </h1>
-          <p className="subtitle">Manage your finances with ease</p>
-          <div className="header-decoration">
-            <div className="decoration-circle"></div>
-            <div className="decoration-line"></div>
-          </div>
-        </div>
-      </div>
+
+      {/* Main content container */}
       <div className="container">
+        {/* Left panel with expense form */}
         <div className="left-panel">
           <ExpenseForm
             onAddExpense={handleAddExpense}
             isDarkMode={isDarkMode}
           />
         </div>
+        {/* Right panel with search and expense table */}
         <div className="right-panel">
           <SearchBar onSearch={handleSearch} isDarkMode={isDarkMode} />
           <ExpenseTable

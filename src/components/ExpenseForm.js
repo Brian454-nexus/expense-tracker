@@ -1,19 +1,34 @@
 import React, { useState } from "react";
 
+/**
+ * ExpenseForm Component
+ * 
+ * Handles the creation of new expenses through a form interface.
+ * Includes validation and proper formatting of data before submission.
+ * 
+ * @param {Object} props
+ * @param {Function} props.onAddExpense - Callback function to add new expense
+ * @param {boolean} props.isDarkMode - Current theme state
+ */
 function ExpenseForm({ onAddExpense }) {
-  // Initial form state
+  // Initial state for the form fields
   const initialFormState = {
     name: "",
     description: "",
     category: "",
     amount: "",
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split("T")[0], // Sets today's date as default
   };
 
-  // Form state
+  // Form state management
   const [formData, setFormData] = useState(initialFormState);
 
-  // Handle input changes
+  /**
+   * Handles changes in form input fields
+   * Updates the form state as user types
+   * 
+   * @param {Object} e - Event object from input change
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -22,23 +37,28 @@ function ExpenseForm({ onAddExpense }) {
     }));
   };
 
-  // Handle form submission
+  /**
+   * Handles form submission
+   * Validates required fields and formats data before submission
+   * 
+   * @param {Object} e - Form submission event
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Basic validation
+    // Validate required fields
     if (!formData.name || !formData.amount || !formData.category) {
       alert("Please fill in all required fields");
       return;
     }
 
-    // Convert amount to number
+    // Format the expense data
     const expenseData = {
       ...formData,
-      amount: parseFloat(formData.amount),
+      amount: parseFloat(formData.amount), // Convert amount to number
     };
 
-    // Add expense and reset form
+    // Submit the expense and reset form
     onAddExpense(expenseData);
     setFormData(initialFormState);
   };
@@ -47,6 +67,7 @@ function ExpenseForm({ onAddExpense }) {
     <div className="expense-form">
       <h2>Add Expense</h2>
       <form onSubmit={handleSubmit}>
+        {/* Expense Name Field */}
         <div className="form-group">
           <input
             type="text"
@@ -58,6 +79,7 @@ function ExpenseForm({ onAddExpense }) {
           />
         </div>
 
+        {/* Description Field */}
         <div className="form-group">
           <input
             type="text"
@@ -68,6 +90,7 @@ function ExpenseForm({ onAddExpense }) {
           />
         </div>
 
+        {/* Category Selection */}
         <div className="form-group">
           <select
             name="category"
@@ -84,19 +107,21 @@ function ExpenseForm({ onAddExpense }) {
           </select>
         </div>
 
+        {/* Amount Field */}
         <div className="form-group">
           <input
             type="number"
             name="amount"
             value={formData.amount}
             onChange={handleChange}
-            placeholder="Amount"
+            placeholder="Amount (KSH)"
             min="0"
             step="0.01"
             required
           />
         </div>
 
+        {/* Date Field */}
         <div className="form-group">
           <input
             type="date"
